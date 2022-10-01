@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Schülerfirma</title>
+    <style>
+      *{padding: 0; margin: 0;}
+      div.heading{
+          position: relative;
+          width: 100vw;
+          height: 25vh;
+          background-color: lightblue;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+      }
+      .wrap {
+        perspective: none;
+        perspective-origin: 50% 100px;
+        position: absolute;
+        top: 50vh;
+        left: 50vw;
+        transform: translatex(-50%);
+      }
+      .cube {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        transform-style: preserve-3d;
+        background-color: red;
+      }
+      .cube div {
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        background-color: inherit;
+      }
+      .back {
+        transform: translateZ(-100px) rotateY(180deg);
+      }
+      .right {
+        transform: rotateY(-270deg) translateX(100px);
+        transform-origin: top right;
+      }
+      .left {
+        transform: rotateY(270deg) translateX(-100px);
+        transform-origin: center left;
+      }
+      .top {
+        transform: rotateX(-90deg) translateY(-100px);
+        transform-origin: top center;
+      }
+      .bottom {
+        transform: rotateX(90deg) translateY(100px);
+        transform-origin: bottom center;
+      }
+      .front {
+        transform: translateZ(100px);
+      }
+      .cube > div{
+        text-align: center;
+        display: grid;
+        border: 1px solid black;
+      }
+      .cube > div >*{
+        margin: auto;
+        z-index: 5;
+      }
+      .cube {
+        transform: rotateY(0deg) rotateX(0deg) rotateZ(0deg);
+        transition: transform 1s;
+      }
+      [anim]>div{
+        animation: animate 3s 1 forwards;
+      }
+      [anim]{
+        animation: move 3s 1 forwards;
+      }
+      @keyframes animate{
+          from{
+              transform: rotate3d(0,0,0);
+              width: 200px;
+              height: 200px;
+          }to{
+              transform: rotateY(360deg) rotateX(360deg) rotateZ(360deg);
+              width: 50px;
+              height: 50px;
+          }
+      }
+      @keyframes move{
+        from{
+          top: 50vh;
+          left: 50vw;
+        }to{
+          top: 40vh;
+          left: 10vw;
+        }
+      }
+      div.headering{
+        font-size: 3vh;
+      }
+      img.aleft{
+        position: absolute;
+        left: 5vw;
+        top: 42vh;
+        transform: translateY(-50%);
+        width: 40vw;
+        height: 20vh;
+        rotate: 180deg;
+      }
+      img.aright{
+        position: absolute;
+        right: 5vw;
+        top: 60vh;
+        transform: translateY(-50%);
+        width: 40vw;
+        height: 20vh;
+      }
+      span.headspan{
+        transition: font-size .5s, color .25s;
+      }
+      span.headspan:hover{
+        cursor: none;
+        transition: font-size .5s, color .5s;
+        font-size: 5vh;
+        color: red;
+      }
+      div.body{
+        position: absolute;
+        top: 25vh;
+        height: 75vh;
+        left: 0;
+        width: 100vw;
+        background-color: rgb(239, 244, 246);
+      }
+      div.cubeicon{
+        position: fixed;
+        top: 12vh;
+        left: 10vw;
+        width: 10vw;
+        height: 10vw;
+        background-color: red;
+        cursor: pointer;
+        transform: translate(-50%, -50%);
+        display: none;
+      }
+      div#hits{
+        position: absolute;
+        top: 10vh;
+        left: 5vw;
+        height: 60vh;
+        width: 25vw;
+        border: 1px black solid;
+      }
+      img#humboldt{
+        width: 50vw;
+        height: 50vh;
+      }
+      .item{
+        background-color: red;
+        margin-top: 1vh;
+        animation: pop-up .5s 1 forwards;
+        color: cyan;
+      }
+      @keyframes pop-up{
+        from{
+          width: 0;
+          height: 0;
+        }to{
+          width: 25vw;
+          height: 7vh;
+        }
+      }
+      .product{
+        position: absolute;
+        top: 50vh;
+        right: 20vw;
+        transform: translate(-50%,-50%);
+        width: 20vw;
+        height: 20vh;
+        background-color: red;
+        display: none;
+        color: cyan;
+      }
+      .hover{
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        width: 100vw;
+        background-color: rgba(255,255,255,.5);
+      }
+    </style>
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/9.9.3/firebase-app-compat.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/9.9.3/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/9.9.3/firebase-database-compat.js"></script>
+    <script defer src="/__/firebase/9.9.3/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/9.9.3/firebase-functions-compat.js"></script>
+    <script defer src="/__/firebase/9.9.3/firebase-messaging-compat.js"></script>
+    <script defer src="/__/firebase/9.9.3/firebase-storage-compat.js"></script>
+    <script defer src="/__/firebase/9.9.3/firebase-analytics-compat.js"></script>
+    <script defer src="/__/firebase/9.9.3/firebase-remote-config-compat.js"></script>
+    <script defer src="/__/firebase/9.9.3/firebase-performance-compat.js"></script>
+    <!-- 
+      initialize the SDK after all desired features are loaded, set useEmulator to false
+      to avoid connecting the SDK to running emulators.
+    -->
+    <body oncontextmenu="return false;">
+    <div class="heading">
+      <div class="headering"><span class="headspan">S</span><span class="headspan">c</span><span class="headspan">h</span><span class="headspan">ü</span><span class="headspan">l</span><span class="headspan">e</span><span class="headspan">r</span><span class="headspan">f</span><span class="headspan">i</span><span class="headspan">r</span><span class="headspan">m</span><span class="headspan">a</span><span class="headspan"> </span><span class="headspan">A</span><span class="headspan">r</span><span class="headspan">t</span><span class="headspan"> </span><span class="headspan">u</span><span class="headspan">n</span><span class="headspan">d</span><span class="headspan"> </span><span class="headspan">W</span><span class="headspan">e</span><span class="headspan">i</span><span class="headspan">s</span><span class="headspan">e</span></div>
+    </div>
+    <div class="body"></div>
+    <div onclick="selecCube();" class="cubeicon"></div>
+    <div class="product" onclick="this.style.display = 'none';">Zusätzliche Produktinformationen</div>
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    <div class="hover"></div>
+    <div class="wrap">
+      <div class="cube">
+        <div class="front" onclick="changeToStart();idleCube();">Start</div>
+        <div class="back" onclick="changeToAbout();idleCube();">Über uns</div>
+        <div class="top">Top</div>
+        <div class="bottom">Bottom</div>
+        <div class="left" onclick="changeToCreative();idleCube();">Werde selber kreativ</div>
+        <div class="right" onclick="changeToShop();idleCube();">SchülerShop</div>
+      </div>
+    </div>
+    <img class="aleft" src="arrow.svg" id="arrow" onclick="changeBackward();">
+    <img class="aright" src="arrow.svg" id="arrow" onclick="changeForward();">
+    <script>
+      let page = 'start';
+      function addOrder(items, name, email){
+          db.collection("Bestellungen").doc(Math.random().toString().substr(2, 8)).set({
+              name: name,
+              email: email,
+              items: items
+          })
+      }
+      function addItem(instock, price, img){
+          db.collection("Produkte").doc(item).set({
+              Images: img,
+              price: price,
+              instock: instock
+          })
+      }
+      function addKontakt(){
+          db.collection("Kontakt").doc(Math.random().toString().substr(2, 8)).set({
+              name: document.getElementById('vorname').value,
+              surname: document.getElementById('nachname').value,
+              class: document.getElementById('class').value
+          })
+      }
+      function changeToStart(){
+        document.getElementsByClassName('headering')[0].innerHTML = '';
+        let title = 'Schülerfirma Art und Weise';
+        
+        for(i in title){
+          document.getElementsByClassName('headering')[0].innerHTML += `<span class="headspan">${title[i]}</span>`;
+        }
+        document.getElementsByClassName('body')[0].innerHTML = '';
+      }
+      function changeToShop(){
+        document.getElementsByClassName('headering')[0].innerHTML = '';
+        let title = 'SchülerShop';
+        document.getElementsByClassName('body')[0].innerHTML = '<h1>Produkte:</h1><div id="hits"></div>';
+        for(i in title){
+          document.getElementsByClassName('headering')[0].innerHTML += `<span class="headspan">${title[i]}</span>`;
+        }
+        setTimeout(function(){fillShop()},1000)
+      }
+      function changeToAbout(){
+        document.getElementsByClassName('headering')[0].innerHTML = '';
+        let title = 'Über uns';
+        
+        for(i in title){
+          document.getElementsByClassName('headering')[0].innerHTML += `<span class="headspan">${title[i]}</span>`;
+        }
+        document.getElementsByClassName('body')[0].innerHTML = '<h1>Wir sind die Schülerfirma Art und Weise!</h1><br><img id="humboldt" src="Humboldt.jfif"></img>';
+      }
+      function changeToCreative(){
+        document.getElementsByClassName('headering')[0].innerHTML = '';
+        let title = 'Werde selber kreativ';
+        
+        for(i in title){
+          document.getElementsByClassName('headering')[0].innerHTML += `<span class="headspan">${title[i]}</span>`;
+        }
+        document.getElementsByClassName('body')[0].innerHTML = '<h1>Möchtest du bei uns mitmachen?</h1><br><h1>Dann bewirb dich jetzt!</h1><br><input type="text" placeholder="Vorname" id="vorname"></input><br><br><input type="text" placeholder="Nachname" id="nachname"></input><br><br><input type="text" placeholder="Klasse" id="class"></input><br><br><button onclick="addKontakt();">Abschicken</button>';
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+      db = firebase.firestore();
+        //changeToStart();
+      });
+      function changeForward(){
+        document.getElementsByClassName('wrap')[0].style.display = 'block';
+        if(page=='start'){
+          document.getElementsByClassName('cube')[0].style.transform = 'rotateY(-90deg) rotateX(0deg) rotateZ(0deg)';
+          page = 'shop';
+        }
+        else if(page=='shop'){
+          document.getElementsByClassName('cube')[0].style.transform = 'rotateY(-180deg) rotateX(0deg) rotateZ(0deg)';
+          page = 'about';
+        }
+        else if(page=='about'){
+          document.getElementsByClassName('cube')[0].style.transform = 'rotateY(-270deg) rotateX(0deg) rotateZ(0deg)';
+          page = 'creative';
+        }
+        else if(page=='creative'){
+          document.getElementsByClassName('cube')[0].style.transform = 'rotateY(0deg) rotateX(0deg) rotateZ(0deg)';
+          page = 'start';
+        }
+      }
+      function changeBackward(){
+        document.getElementsByClassName('wrap')[0].style.display = 'block';
+        if(page=='start'){
+          document.getElementsByClassName('cube')[0].style.transform = 'rotateY(-270deg) rotateX(0deg) rotateZ(0deg)';
+          page = 'creative';
+        }
+        else if(page=='creative'){
+          document.getElementsByClassName('cube')[0].style.transform = 'rotateY(-180deg) rotateX(0deg) rotateZ(0deg)';
+          page = 'about';
+        }
+        else if(page=='about'){
+          document.getElementsByClassName('cube')[0].style.transform = 'rotateY(-90deg) rotateX(0deg) rotateZ(0deg)';
+          page = 'shop';
+        }
+        else if(page=='shop'){
+          document.getElementsByClassName('cube')[0].style.transform = 'rotateY(0deg) rotateX(0deg) rotateZ(0deg)';
+          page = 'start';
+        }
+      }
+      function idleCube(){
+        document.getElementsByClassName('aleft')[0].style.display = 'none';
+        document.getElementsByClassName('aright')[0].style.display = 'none';
+        document.getElementsByClassName('wrap')[0].style.display = 'none';
+        document.getElementsByClassName('hover')[0].style.display = 'none';
+        document.getElementsByClassName('cubeicon')[0].style.display = 'block';
+      }
+      function selecCube(){
+        document.getElementsByClassName('aleft')[0].style.display = 'block';
+        document.getElementsByClassName('aright')[0].style.display = 'block';
+        document.getElementsByClassName('wrap')[0].style.display = 'block';
+        document.getElementsByClassName('hover')[0].style.display = 'block';
+        document.getElementsByClassName('cubeicon')[0].style.display = 'none';
+      }
+      function getAllProducts(){
+          let list = [];
+          db.collection('Produkte').get().then((querySnapshot) => {
+              querySnapshot.forEach((doc) => {
+                  list.push(doc.id);
+              });
+          });
+          return list;
+      }
+      function fillShop(){
+          let inc = 0;
+          let list = [];
+          db.collection('Produkte').get().then((querySnapshot) => {
+              querySnapshot.forEach((doc) => {
+                  list.push(doc.id);
+              });
+          });
+          const query = db.collection('Produkte');
+          query.get()
+              .then(products => {
+                  products.forEach(doc => {
+                      data1 = doc.data()
+                      document.getElementById('hits').innerHTML += `<div onclick="itemclick(${inc});" class="item"><pan>${list[inc]}</span>:<br>Preis: <span>${data1.Preis}€</span><br>Verfügbar: <span>${data1.InStock}</span><div><br><br>`;
+                      inc = inc + 1;
+                  })
+              })
+      }
+      function itemclick(id){
+        document.getElementsByClassName('product')[0].innerHTML = document.getElementsByClassName('item')[id].innerHTML;
+        document.getElementsByClassName('product')[0].style.display = 'block';
+      }
+      function signIn(){
+        const provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider)
+        .then(
+            result => {
+                const user = result.user;
+                localStorage.setItem('user',user.displayName);
+                const {additionalUserInfo: {isNewUser}} = result;
+            }
+        )
+      }
+    </script>
+  </body>
+</html>
